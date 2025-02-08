@@ -16,13 +16,26 @@ import { Server } from "socket.io";
 const app = express();
 
 const server = http.createServer(app);
-const io = new Server(server);
+const io = new Server(server ,{
+    cors:{
+      origin: process.env.FRONTEND_URL || '*' , 
+      methods:['GET',"POST"]
+    }
+});
+
+
 app.use(
   cors({
     origin: "*",
     credentials: true,
   })
 );
+
+
+io.on("connection" , (socket) => {
+  console.log("Hello from ",socket);
+})
+
 
 app.use(express.json({ limit: "32kb" }));
 app.use(express.urlencoded({ extended: true, limit: "32kb" }));
@@ -53,6 +66,6 @@ mongoose
     console.error("Error connecting to MongoDB:", err);
   });
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server running on ${PORT}`);
 });
