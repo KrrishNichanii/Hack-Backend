@@ -1,11 +1,12 @@
 import Post from "../models/post.model.js";
+import User from "../models/user.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 
 //tested
 const createPost = async (req, res) => {
   try {
-    const { title, content, tags, userId } = req.body;
+    const { title, content, tags, userId , criticality} = req.body;
     if (!title || !content) {
       throw new Error("All fields are required");
     }
@@ -33,11 +34,17 @@ const createPost = async (req, res) => {
       },
       tags: tags,
       user: userId,
-      comments: []
+      comments: [] , 
+      criticality , 
+      verifiedBy: [] , 
+      disapprovedBy: [] , 
     });
 
     // Fetch the newly created post and send response
     const populatedPost = await Post.findById(post._id);
+
+    //TODO: if criticality is severe or user is verified user then only send notification immediately
+
     return res.status(200).send({
       success: true,
       message: "Successfully added post",
@@ -121,7 +128,7 @@ const getPostsByUserId = async(req , res) => {
 
 
 //tested
-const getPostById = async(req , res) => {
+const getPostById = async (req , res) => {
   try {
     const { postId } = req.params ; 
 
@@ -134,6 +141,87 @@ const getPostById = async(req , res) => {
   }
 }
 
-export { createPost, deletePost, likePost , getAllPosts , getPostsByUserId , getPostById};
+const addVerification = async (req , res) => {
+   const {severity , postId , userId} = req.body ; 
+
+   try {
+     if(!userId) throw new Error("UserId is required") ; 
+
+     let user = await User.findById(userId) ; 
+
+     if(!user) throw new Error("User not found") ; 
+
+     if(user.credit < 5) throw new Error("User is unauthorized to verify") ; 
+      
+     let post = await Post.findById(postId) ; 
+    
+     if(!post) throw new Error("Post not found") ; 
+      
+     if(post.status === 'Disapproved') throw new Error("Cannot verify disapproved posts") ; 
+     
+     if(post.verifiedBy.includes(userId)) throw new Error("Already verified by you") ; 
+
+     post.verifiedBy.push(userId) ; 
+     post.criticality = severity ; 
+     
+     if(post.verifiedBy.length === 3){
+       // TODO : send notification
+       //send postId and verifies user's severity
+       const users = await User.find({ _id: { $in: post.verifiedBy } }) ; 
+       for(let i=0;i<users.length;i++){
+         users[i].credit += 1 ; 
+         await users[i].save() ; 
+        }
+
+        post.status = "Verified"
+      }
+      await post.save() ; 
+     post = await Post.findById(post._id) ; 
+     res.status(200).json({success: true , message: "Successfully approved post" , data: post})
+   } catch (error) {
+       res.status(400).json({success: false , message: error.message , data: {}}) ; 
+   }
+}
+
+const addDisapproval = async (req , res) => {
+   const { postId , userId} = req.body ; 
+
+   try {
+     if(!userId) throw new Error("UserId is required") ; 
+     let user = await User.findById(userId) ;
+
+     if(!user) throw new Error("User not found") ;
+
+     if(user.credit < 5) throw new Error("User is unauthorized to disapprove") ;
+
+     let post = await Post.findById(postId) ; 
+     if(!post) throw new Error("Post not found") ; 
+     if(post.status === 'Verified') throw new Error("Cannot disapprove verified posts") ; 
+     
+     if(post.disapprovedBy.find(item => item === userId)) throw new Error("Already disapproved by you") ; 
+
+     post.disapprovedBy.push(userId) ; 
+    //  post.criticality = severity ; 
+    
+    if(post.disapprovedBy.length === 2){
+      // TODO : send notification
+      //send postId and verifies user's severity
+      const users = await User.find({ _id: { $in: post.verifiedBy } }) ; 
+      for(let i=0;i<users.length;i++){
+        users[i].credit -= 1 ; 
+        await users[i].save() ; 
+      }
+
+      post.status = "Disapproved"
+    }
+     await post.save() ; 
+     post = await Post.findById(post._id) ; 
+     res.status(200).json({success: true , message: "Successfully disapproved post" , data: post})
+   } catch (error) {
+       res.status(400).json({success: false , message: error.message , data: {}}) ; 
+   }
+}
+
+export { createPost, deletePost, likePost , getAllPosts , getPostsByUserId , getPostById , addVerification , addDisapproval};
 
 

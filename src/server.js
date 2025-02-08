@@ -9,7 +9,14 @@ import postRouter from "./routes/post.router.js";
 import commentRouter from "./routes/comment.router.js";
 import aiRouter from "./routes/askai.router.js";
 
+import http from "http";
+import { Server } from "socket.io";
+
+
 const app = express();
+
+const server = http.createServer(app);
+const io = new Server(server);
 app.use(
   cors({
     origin: "*",

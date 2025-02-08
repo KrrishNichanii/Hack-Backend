@@ -36,8 +36,26 @@ const postSchema = new Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User' , 
     } , 
-    
-     
+    status : {
+        type: String , 
+        default: 'Not Verified'
+    } , 
+    criticality: {
+        type: String , 
+        default: 'Minor'
+    } , 
+    verifiedBy: [{
+        type: mongoose.Schema.Types.ObjectId , 
+        ref: 'User'
+    }] , 
+
+    disapprovedBy: [{
+        type: mongoose.Schema.Types.ObjectId , 
+        ref: 'User'
+    }] , 
+
+    //status values - not verified , verified , Solved
+    //criticality values - Minor(2Km) , Moderate(750m) , Severe(250m)
 }, {
     timestamps: true
 });

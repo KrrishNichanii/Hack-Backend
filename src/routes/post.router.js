@@ -1,6 +1,6 @@
 import { Router } from 'express' ; 
 import { upload } from '../middlewares/multer.middleware.js';
-import { createPost, deletePost, getAllPosts, getPostById, getPostsByUserId, likePost } from '../controllers/post.controller.js';
+import { addDisapproval, addVerification, createPost, deletePost, getAllPosts, getPostById, getPostsByUserId, likePost } from '../controllers/post.controller.js';
 
 
 const router = Router() ; 
@@ -11,6 +11,8 @@ router.delete('/delete', deletePost) ;
 router.get('/user/:userId', getPostsByUserId) ;
 router.get('/:postId', getPostById) ;
 router.get('/', getAllPosts) ;
+router.post('/addVerification', addVerification) ;
+router.post('/addDisapproval', addDisapproval) ;
 
  
 export default router ; 

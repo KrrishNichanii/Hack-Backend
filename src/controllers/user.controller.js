@@ -59,6 +59,7 @@ const signUp = async (req , res) => {
                 public_id: "" , 
                 secure_url:"" , 
             } , 
+            friends: []
         }) ; 
 
         if(!user){
