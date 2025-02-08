@@ -4,6 +4,8 @@ import cors from 'cors' ;
 dotenv.config();
 import cookieParser from 'cookie-parser' ; 
 import mongoose from 'mongoose' ; 
+import userRouter from './routes/user.router.js' ; 
+import postRouter from './routes/post.router.js' ; 
 
 const app = express();
 app.use(cors({
@@ -17,11 +19,15 @@ app.use(express.static("public")) ;
 app.use(cookieParser()) ; 
 
 
-// Sample API Route
-app.get("/api/message", (req, res) => {
-  res.json({ message: "Hello from the backend!" });
+
+app.get("/ping", (req, res) => {
+  res.send('Pong') ; 
 }) ; 
 
+
+// Routes
+app.use('/user',userRouter) ; 
+app.use('/post',postRouter) ; 
 
 const PORT = process.env.PORT || 8000 ; 
 
@@ -32,9 +38,9 @@ mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTop
   .catch((err) => {
     console.error('Error connecting to MongoDB:', err);
   });
-  
+
 app.listen(PORT , () => {
   console.log(`Server running on ${PORT}`);
   
 })
-// export { app } ; 
+ 

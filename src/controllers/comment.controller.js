@@ -1,6 +1,6 @@
-import 'User' from '../models/user.model.js';
-import 'Post' from '../models/post.model.js';
-import 'Comment' from '../models/comment.model.js';
+import User from '../models/user.model.js';
+import Post from '../models/post.model.js';
+import Comment from '../models/comment.model.js';
 
 const addCommentToPost = async (req, res) => {
     try{
@@ -51,4 +51,4 @@ const likeComment = async (req, res) => {
     }
 };
 
-export { addCommentToPost, addCommentToComment };
+export { addCommentToPost, addCommentToComment ,likeComment };
