@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser' ;
 import mongoose from 'mongoose' ; 
 import userRouter from './routes/user.router.js' ; 
 import postRouter from './routes/post.router.js' ; 
+import commentRouter from './routes/comment.router.js' ; 
 
 const app = express();
 app.use(cors({
@@ -28,6 +29,7 @@ app.get("/ping", (req, res) => {
 // Routes
 app.use('/user',userRouter) ; 
 app.use('/post',postRouter) ; 
+app.use('/comment',commentRouter) ; 
 
 const PORT = process.env.PORT || 8000 ; 
 
