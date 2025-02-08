@@ -6,8 +6,8 @@ import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
 import userRouter from "./routes/user.router.js";
 import postRouter from "./routes/post.router.js";
-import aiRouter from "./routes/askai.router.js";
-import { io, server } from "./sockets/setup.js";
+import commentRouter from "./routes/comment.router.js";
+import aiRouter from "./routes/ai.router.js";
 
 const app = express();
 app.use(
@@ -29,6 +29,7 @@ app.get("/ping", (req, res) => {
 // Routes
 app.use("/user", userRouter);
 app.use("/post", postRouter);
+app.use("/comment", commentRouter);
 app.use("/ai", aiRouter);
 
 const PORT = process.env.PORT || 8000;

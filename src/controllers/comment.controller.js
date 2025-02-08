@@ -2,37 +2,57 @@ import User from '../models/user.model.js';
 import Post from '../models/post.model.js';
 import Comment from '../models/comment.model.js';
 
+
+//tested
 const addCommentToPost = async (req, res) => {
     try{
-        const {postId , comment , userId} = req.body ; 
-        
-        if(!postId || !comment){
+        const {postId , content , userId} = req.body ; 
+
+        if(!postId || !content || !userId){
             res.send({success: false , message: "Post ID and Comment are required"}) ; 
         }
+
+        const comment = await Comment.create({
+            content , 
+            user: userId , 
+            comments:[]
+        })
         // Add Comment to Post
-        const post = await Post.findById(postId) ; 
-        post.comments.push(comment) ; 
+        let post = await Post.findById(postId) ; 
+        post.comments.push(comment._id) ; 
         await post.save() ; 
-        res.send({success: true , post}) ;
+        post = await Post.findById(post._id) ; 
+        res.status(200).send({success: true , data : post , message: "Comment added successfully"}) ;
     }catch(err){
-        res.send({success: false , message: err.message}) ; 
+        res.status(400).send({success: false , message: err.message , data: {}}) ; 
     }
 };
 
+
+//tested
 const addCommentToComment = async (req, res) => {
     try{
-        const {postId , commentId , reply} = req.body ; 
-        if(!postId || !commentId || !comment){
-            res.send({success: false , message: "Post ID, Comment ID and Comment are required"}) ; 
+        const {commentId , reply , userId} = req.body ; 
+        if(!commentId || !reply || !userId){
+            res.send({success: false , message: "Comment ID and Comment are required"}) ; 
         }
-        // Add Comment to Comment
-        const post = await Post.findById(postId) ; 
-        const comment = post.comments.id(commentId) ; 
-        comment.comments.push(reply) ; 
-        await post.save() ; 
-        res.send({success: true , post}) ;
+
+        const newComment = await Comment.create({
+            content : reply, 
+            user: userId , 
+            comments:[]
+        })
+
+        let oldComment = await Comment.findById(commentId) ; 
+        if(!oldComment) throw new Error("Comment not found") ; 
+        
+        oldComment.comments.push(newComment) ; 
+
+        await oldComment.save() ; 
+        oldComment  = await Comment.findById(oldComment._id) ; 
+        res.send({success: true , data: oldComment , message: "Comment added"}) ;
     }catch(err){
-        res.send({success: false , message: err.message}) ; 
+        res.send({success: false , message: err.message , data: {}}) ; 
     }
 };
 
@@ -52,4 +72,4 @@ const likeComment = async (req, res) => {
     }
 };
 
-export { addCommentToPost, addCommentToComment ,likeComment };
+export { addCommentToPost, addCommentToComment , likeComment };

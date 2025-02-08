@@ -119,6 +119,21 @@ const getPostsByUserId = async(req , res) => {
   }
 }
 
-export { createPost, deletePost, likePost , getAllPosts , getPostsByUserId};
+
+//tested
+const getPostById = async(req , res) => {
+  try {
+    const { postId } = req.params ; 
+
+    if(!postId) throw new Error("Post ID is required") ; 
+    
+    const post = await Post.findById(postId) ; 
+    return res.status(200).json({success: true , message: "Post fetched successfully" , data: post}) ; 
+  } catch (error) {
+    return res.status(400).json({success: false , message: error.message , data: {}}) ; 
+  }
+}
+
+export { createPost, deletePost, likePost , getAllPosts , getPostsByUserId , getPostById};
 
 
