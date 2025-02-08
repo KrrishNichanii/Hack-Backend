@@ -4,7 +4,8 @@ import Comment from '../models/comment.model.js';
 
 const addCommentToPost = async (req, res) => {
     try{
-        const {postId , comment} = req.body ; 
+        const {postId , comment , userId} = req.body ; 
+        
         if(!postId || !comment){
             res.send({success: false , message: "Post ID and Comment are required"}) ; 
         }
