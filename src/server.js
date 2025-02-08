@@ -1,0 +1,40 @@
+import express from "express" ; 
+import dotenv from 'dotenv' ; 
+import cors from 'cors' ; 
+dotenv.config();
+import cookieParser from 'cookie-parser' ; 
+import mongoose from 'mongoose' ; 
+
+const app = express();
+app.use(cors({
+  origin: '*',
+  credentials: true
+}));    
+
+app.use(express.json({limit:"32kb"})) ; 
+app.use(express.urlencoded({extended:true ,limit: "32kb"})) ; 
+app.use(express.static("public")) ; 
+app.use(cookieParser()) ; 
+
+
+// Sample API Route
+app.get("/api/message", (req, res) => {
+  res.json({ message: "Hello from the backend!" });
+}) ; 
+
+
+const PORT = process.env.PORT || 8000 ; 
+
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => {
+    console.log('Successfully connected to MongoDB');
+  })
+  .catch((err) => {
+    console.error('Error connecting to MongoDB:', err);
+  });
+  
+app.listen(PORT , () => {
+  console.log(`Server running on ${PORT}`);
+  
+})
+// export { app } ; 
