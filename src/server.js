@@ -7,7 +7,7 @@ import mongoose from "mongoose";
 import userRouter from "./routes/user.router.js";
 import postRouter from "./routes/post.router.js";
 import commentRouter from "./routes/comment.router.js";
-import aiRouter from "./routes/ai.router.js";
+import aiRouter from "./routes/askai.router.js";
 
 const app = express();
 app.use(
