@@ -1,8 +1,6 @@
 // server.js
 import express from "express";
-import dotenv from "dotenv";
 import cors from "cors";
-dotenv.config();
 import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
 import userRouter from "./routes/user.router.js";
@@ -60,6 +58,8 @@ app.use("/comment", commentRouter);
 app.use("/ai", aiRouter);
 
 const PORT = process.env.PORT || 8000;
+
+console.log(process.env.MONGODB_URI);
 
 mongoose
   .connect(process.env.MONGODB_URI, {
