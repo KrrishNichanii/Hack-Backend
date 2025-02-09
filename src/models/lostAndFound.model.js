@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { Schema, model } from "mongoose";
 
-const postSchema = new Schema(
+const lostAndFoundSchema = new Schema(
   {
     content: {
       type: String,
@@ -43,7 +43,7 @@ const postSchema = new Schema(
     },
     status: {
       type: String,
-      default: "Not Verified",
+      default: "Lost", // will be chnaged to found
     },
     criticality: {
       type: String,
@@ -70,10 +70,7 @@ const postSchema = new Schema(
         type: String , 
         default: "General"
     } , 
-    isLostAndFound: {
-        type: Boolean , 
-        default: false , 
-    }
+
     //community values  - Mumbai Railway ,  water supply , Traffic road , Accidents
     //status values - not verified , verified , Solved
     //criticality values - Minor(2Km) , Moderate(750m) , Severe(250m)
@@ -83,6 +80,6 @@ const postSchema = new Schema(
   }
 );
 
-const Post = model("Post", postSchema);
+const LostAndFound = model("LostAndFound", lostAndFoundSchema);
 
 export default Post;

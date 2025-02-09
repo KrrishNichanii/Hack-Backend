@@ -49,6 +49,17 @@ const userSchema = new Schema(
       latitude: { type: Number, required: false, default: null },
       longitude: { type: Number, required: false, default: null },
     },
+    badges: [{
+        type: String , 
+    }] , 
+    verifiedPostsCount: {
+        type: Number , 
+        default: 0 , 
+    } , 
+    verifiedIssuesCount: {
+        type: Number , 
+        default: 0 ,
+    }
   },
   {
     timestamps: true,

@@ -1,3 +1,4 @@
+// server.js
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
@@ -14,6 +15,7 @@ import { Server } from "socket.io";
 import Post from "./models/post.model.js";
 import User from "./models/user.model.js";
 import { getDistance } from "./utils/functions.js";
+import { notifications } from "./utils/notifications.js";
 
 const app = express();
 
@@ -25,47 +27,21 @@ const io = new Server(server, {
   },
 });
 
-app.use(
-  cors({
-    origin: "*",
-    credentials: true,
-  })
-);
+// Attach the io instance to the Express app
+app.set("io", io);
 
+// Socket connection handling
 io.on("connection", (socket) => {
-  // console.log("Hello from ", socket.handshake.query);
+  console.log("User connected", socket.id);
+
   socket.on("newPost", async ({ postId }) => {
-    console.log("post", postId);
-
-    const post = await Post.findById(postId);
-    if (!post) {
-      throw new Error("Post not found");
-    }
-    if (post.criticality === "Severe" || post.status === "Verified") {
-      io.sockets.sockets.forEach(async (socketInstance) => {
-        const userId = socketInstance.handshake.query.userId;
-        const user = await User.findById(userId);
-        if (!user) {
-          throw new Error("User not found");
-        }
-        const distance = getDistance(post.location, user.location);
-        console.log("helo", distance);
-
-        if (
-          (post.criticality === "Severe" && distance <= 300) ||
-          (post.criticality === "Moderate" && distance <= 750) ||
-          (post.criticality === "Minor" && distance <= 2000)
-        ) {
-          socketInstance.emit("notification", post);
-        }
-      });
-    }
+    console.log("Received newPost event for post:", postId);
+    // You can call your notification logic here if needed
   });
-  io.on("disconnect", () => {
+
+  socket.on("disconnect", () => {
     console.log("User disconnected");
   });
-
-  // console.log("User connected");
 });
 
 app.use(express.json({ limit: "32kb" }));
@@ -100,3 +76,6 @@ mongoose
 server.listen(PORT, () => {
   console.log(`Server running on ${PORT}`);
 });
+
+// Optionally export io if needed elsewhere, but avoid circular imports in controllers
+export { io };

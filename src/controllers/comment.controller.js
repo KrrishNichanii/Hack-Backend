@@ -7,7 +7,8 @@ import Comment from '../models/comment.model.js';
 const addCommentToPost = async (req, res) => {
     try{
         const {postId , content , userId} = req.body ; 
-
+        console.log('C ' , postId);
+        
         if(!postId || !content || !userId){
             res.send({success: false , message: "Post ID and Comment are required"}) ; 
         }
@@ -19,6 +20,7 @@ const addCommentToPost = async (req, res) => {
         })
         // Add Comment to Post
         let post = await Post.findById(postId) ; 
+        if(!post) throw new Error("Post not found") ; 
         post.comments.push(comment._id) ; 
         await post.save() ; 
         post = await Post.findById(post._id) ; 
@@ -28,7 +30,17 @@ const addCommentToPost = async (req, res) => {
     }
 };
 
+const getCommentsByPost = async (req , res) => {
+      const { postId } = req.params ; 
 
+      try {
+        const post =  await Post.findById(postId).populate("comments") ; 
+
+        res.status(200).json({success: true , message: "Fetched comments successfully" , data: post.comments}) ; 
+      } catch (error) {
+         return res.status(400).json({success: false , message: "Unable to fetch" , data:{}}) ; 
+      }
+}
 //tested
 const addCommentToComment = async (req, res) => {
     try{
@@ -72,4 +84,4 @@ const likeComment = async (req, res) => {
     }
 };
 
-export { addCommentToPost, addCommentToComment , likeComment };
+export { addCommentToPost, addCommentToComment , likeComment  , getCommentsByPost};

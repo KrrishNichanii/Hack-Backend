@@ -39,7 +39,7 @@ const signIn = async (req, res, next) => {
 // tested
 const signUp = async (req, res) => {
   try {
-    const { username, email, password, location } = req.body;
+    const { username, email, password, latitude , longitude } = req.body;
     console.log("Us ", req.body);
 
     if (!username || !email || !password) {
@@ -61,7 +61,11 @@ const signUp = async (req, res) => {
         secure_url: "",
       },
       friends: [],
-      location,
+      location: {
+        latitude , 
+        longitude
+      },
+      badges: [] , 
     });
 
     if (!user) {
