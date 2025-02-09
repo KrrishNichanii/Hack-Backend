@@ -31,12 +31,14 @@ app.set("io", io);
 // Socket connection handling
 io.on("connection", (socket) => {
   console.log("User connected", socket.id);
-
+  io.emit("simple-message", "Hello from the server!");
   socket.on("newPost", async ({ postId }) => {
     console.log("Received newPost event for post:", postId);
     // You can call your notification logic here if needed
   });
-
+  socket.on("tobackend", ()=>{
+    console.log("Received from frontend");
+  })
   socket.on("disconnect", () => {
     console.log("User disconnected");
   });
@@ -62,7 +64,7 @@ const PORT = process.env.PORT || 8000;
 console.log(process.env.MONGODB_URI);
 
 mongoose
-  .connect(process.env.MONGODB_URI, {
+  .connect("mongodb+srv://dakshjain624:SPIT-hack@spit-hack.7enuz.mongodb.net/", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
